@@ -45,7 +45,7 @@ namespace TaskManagement.Application.Features.Tasks.Commands.UpdateTaskStatus
             task.Status = request.NewStatus;
             _taskRepository.Update(task);
             await _unitOfWork.Save();
-            return $"Task With Id : {request.TaskId} \n Conver Successfully From {OldStautus} To {task.Status}";
+            return $"Task With Id : {request.TaskId} \n Convert Successfully From {OldStautus} To {task.Status}";
         }
         public bool validTransition(TaskStatusEnum oldstatus,TaskStatusEnum newstaus )
         {

@@ -181,7 +181,7 @@
   {
     "ContainingType": "TaskManagement.Api.Controllers.TaskController",
     "Method": "Create",
-    "RelativePath": "api/Task",
+    "RelativePath": "api/Task/CreateTask",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,

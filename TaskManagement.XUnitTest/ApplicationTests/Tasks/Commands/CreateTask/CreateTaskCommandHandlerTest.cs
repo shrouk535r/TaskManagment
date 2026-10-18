@@ -51,10 +51,11 @@ namespace TaskManagement.XUnitTest.ApplicationTests.Tasks.Commands.CreateTask
             var handler = new CreateTaskCommandHandler(_taskRepoMock.Object, _unifOfWorkMock.Object, _projectRepoMock.Object);
 
             // Act
-            Func<Task> act = async () => await handler.Handle(command, default);
+            Func<Task> result = async () => await handler.Handle(command, default);
 
             // Assert
-            await act.Should().ThrowAsync<NotFoundException>();
+            _taskRepoMock.Verify(x => x.Update(It.IsAny<TaskEntity>()), Times.Never, "Not");
+            await result.Should().ThrowAsync<NotFoundException>();
         }
         [Fact]
         public async Task Create_Task_with_Invalid_User_should_Throw_Excepition()
@@ -76,10 +77,39 @@ namespace TaskManagement.XUnitTest.ApplicationTests.Tasks.Commands.CreateTask
             var handler = new CreateTaskCommandHandler(_taskRepoMock.Object, _unifOfWorkMock.Object, _projectRepoMock.Object);
 
             // Act
-            Func<Task> act = async () => await handler.Handle(command, default);
+            Func<Task> result = async () => await handler.Handle(command, default);
 
             // Assert
-            await act.Should().ThrowAsync<ForbiddenException>();
+            _taskRepoMock.Verify(x => x.Update(It.IsAny<TaskEntity>()), Times.Never, "Not");
+            await result.Should().ThrowAsync<ForbiddenException>();
+
+        }
+        [Fact]
+        public async Task Create_Task_with_Valid_Project_and_Valid_User_should_Ceated_successfully_and_return_guid()
+        {
+            // Arrange
+            var validUserId = Guid.NewGuid();
+
+            var project = new Project() { UserId = validUserId };
+            _projectRepoMock.Setup(x => x.GetById(project.Id)).ReturnsAsync(project);
+            var command = new CreateTaskCommand
+                (
+                "Task1",
+                "None Description",
+                TaskPriority.Low,
+                DateOnly.FromDateTime(DateTime.Now.AddDays(3)),
+                project.Id,
+                validUserId.ToString()
+                );
+            var handler = new CreateTaskCommandHandler(_taskRepoMock.Object, _unifOfWorkMock.Object, _projectRepoMock.Object);
+
+            // Act
+            var result =   handler.Handle(command, default);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeOfType<Task<Guid>>();
+            _taskRepoMock.Verify(x => x.Add(It.IsAny<TaskEntity>()), Times.Once, "Not");
         }
     }
 }

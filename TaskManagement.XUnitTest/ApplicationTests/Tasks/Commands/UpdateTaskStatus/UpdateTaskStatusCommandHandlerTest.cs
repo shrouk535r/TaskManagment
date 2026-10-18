@@ -7,11 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TaskManagement.Application.Features.Tasks.Commands.UpdateTaskStatus;
+using TaskManagement.Domain.Entities;
 using TaskManagement.Domain.Entities.Projects;
 using TaskManagement.Domain.Entities.Tasks;
 using TaskManagement.Domain.Interfaces.Repositories;
 using TaskManagement.Domain.Interfaces.UOW;
 using Task = System.Threading.Tasks.Task;
+using TaskEntity = TaskManagement.Domain.Entities.Tasks.Task;
+
 namespace TaskManagement.XUnitTest.ApplicationTests.Tasks.Commands.UpdateTaskStatus
 {
     public class UpdateTaskStatusCommandHandlerTest
@@ -33,7 +36,7 @@ namespace TaskManagement.XUnitTest.ApplicationTests.Tasks.Commands.UpdateTaskSta
             //Arrange
             var OldStatus = TaskStatusEnum.Todo;
             Guid userId = Guid.NewGuid();
-            var task = new Domain.Entities.Tasks.Task() 
+            var task = new TaskEntity() 
             {
                 Status =OldStatus,
                 Project =new Project()
@@ -50,7 +53,10 @@ namespace TaskManagement.XUnitTest.ApplicationTests.Tasks.Commands.UpdateTaskSta
             //Assert
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
+            _taskRepoMock.Verify(x => x.Update(It.IsAny<TaskEntity>()), Times.Once, "Not");
+
         }
+        [Fact]
         public async Task Transition_Status_From_Completed_To_InProgress_Should_Failed()
         {
             //Arrange
@@ -70,8 +76,10 @@ namespace TaskManagement.XUnitTest.ApplicationTests.Tasks.Commands.UpdateTaskSta
             //Act
             var result = await handler.Handle(command, default);
             //Assert
+            _taskRepoMock.Verify(x => x.Update(It.IsAny<TaskEntity>()), Times.Never, "Not");
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeFalse();
+
         }
 
     }

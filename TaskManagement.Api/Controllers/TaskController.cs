@@ -55,7 +55,7 @@ namespace TaskManagement.Api.Controllers
         }
         // POST api/<TaskController>
         [Authorize]
-        [HttpPost]
+        [HttpPost("CreateTask")]
         public async Task<ActionResult> Create(CreateTaskRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

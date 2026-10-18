@@ -1,0 +1,6 @@
+{
+  "TaskManagement.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "E:\\Fullstack\\projects\\TaskManagementApi\\TaskManagement.Api\\TaskManagement.Api",
+  "TaskManagement.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "E:\\Fullstack\\projects\\TaskManagementApi\\TaskManagement.Api\\TaskManagement.Application",
+  "TaskManagement.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "E:\\Fullstack\\projects\\TaskManagementApi\\TaskManagement.Api\\TaskManagement.Domain",
+  "TaskManagement.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "E:\\Fullstack\\projects\\TaskManagementApi\\TaskManagement.Api\\TaskManagement.Infrastructure"
+}
