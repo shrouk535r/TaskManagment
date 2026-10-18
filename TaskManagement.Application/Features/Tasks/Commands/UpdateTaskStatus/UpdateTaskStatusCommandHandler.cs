@@ -10,10 +10,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaskManagement.Application.Results;
 
 namespace TaskManagement.Application.Features.Tasks.Commands.UpdateTaskStatus
 {
-    public sealed class UpdateTaskStatusCommandHandler : IRequestHandler<UpdateTaskStatusCommand, bool>
+    public sealed class UpdateTaskStatusCommandHandler : IRequestHandler<UpdateTaskStatusCommand, Result<string>>
     {
         private ITaskRepository _taskRepository;
         private IUnitOfWork _unitOfWork;
@@ -23,25 +24,28 @@ namespace TaskManagement.Application.Features.Tasks.Commands.UpdateTaskStatus
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> Handle(UpdateTaskStatusCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(UpdateTaskStatusCommand request, CancellationToken cancellationToken)
         {
             var task = await _taskRepository.GetById(request.TaskId);
             if (task == null)
             {
-                throw new NotFoundException(nameof(Domain.Entities.Tasks.Task), request.TaskId);
+                return new Error("Id Not Found", $"There is Not Task With This Id: {request.TaskId}");
             }
+            var OldStautus = task.Status;
             if (!Guid.TryParse(request.userId, out var userId))
-                throw new ConflictException("id cannot convert to Guid");
+                return new Error("Convert Conflict", "id cannot convert to Guid");
 
             if (task.Project.UserId != userId)
-                throw new ForbiddenException("Update this Task, Owner only can update it");
+                return new Error("Forbidden Error", "This User Not Allowed to Update this Task, Owner only can update it");
+
 
             if (!validTransition(task.Status, request.NewStatus))
-                throw new ConflictException($"cannot convert from {task.Status} to {request.NewStatus}");
+                return new Error("Task Status Conflict", $"cannot convert from {task.Status} to {request.NewStatus}");
+
             task.Status = request.NewStatus;
             _taskRepository.Update(task);
             await _unitOfWork.Save();
-            return true;
+            return $"Task With Id : {request.TaskId} \n Conver Successfully From {OldStautus} To {task.Status}";
         }
         public bool validTransition(TaskStatusEnum oldstatus,TaskStatusEnum newstaus )
         {

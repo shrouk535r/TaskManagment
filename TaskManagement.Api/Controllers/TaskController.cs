@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using TaskManagement.Application.Results;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -99,11 +100,7 @@ namespace TaskManagement.Api.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await mediator.Send(new UpdateTaskStatusCommand(id, newStatus, userId));
-            return Ok(new
-            {
-                Message = $"Task Status Updated Successfully To {newStatus}!",
-                Data = result
-            });
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error.Description);
         }
 
         // DELETE api/<TaskController>/5

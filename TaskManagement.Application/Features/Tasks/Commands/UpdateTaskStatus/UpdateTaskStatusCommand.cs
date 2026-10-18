@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaskManagement.Application.Results;
 
 namespace TaskManagement.Application.Features.Tasks.Commands.UpdateTaskStatus
 {
-    public sealed record UpdateTaskStatusCommand(Guid TaskId, TaskStatusEnum NewStatus, string userId):IRequest<bool>;
+    public sealed record UpdateTaskStatusCommand(Guid TaskId, TaskStatusEnum NewStatus, string userId):IRequest<Result<string>>;
 }
